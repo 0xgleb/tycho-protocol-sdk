@@ -2,6 +2,20 @@ syntax = "proto3";
 
 package raindex.orderbook;
 
+// Describes a vault owned by an individual user holding specific ERC20 tokens.
+// Vaults fund orders and this Protobuf representation is needed to associate
+// liquidity with orders.
+message Vault {
+    // The owner of the vault.
+    bytes owner = 1;
+    // The token held in the vault.
+    bytes token = 2;
+    // The vault ID of the vault.
+    bytes vault_id = 3;
+    // The vault balance.
+    bytes balance = 4;
+}
+
 // Defines a fully deployed order ready to evaluate by Orderbook. Identical to
 // `Order` except for the newer `EvaluableV2`.
 message OrderV3 {

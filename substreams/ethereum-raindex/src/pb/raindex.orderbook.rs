@@ -1,4 +1,23 @@
 // @generated
+/// Describes a vault owned by an individual user holding specific ERC20 tokens.
+/// Vaults fund orders and this Protobuf representation is needed to associate
+/// liquidity with orders.
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Vault {
+    /// The owner of the vault.
+    #[prost(bytes="vec", tag="1")]
+    pub owner: ::prost::alloc::vec::Vec<u8>,
+    /// The token held in the vault.
+    #[prost(bytes="vec", tag="2")]
+    pub token: ::prost::alloc::vec::Vec<u8>,
+    /// The vault ID of the vault.
+    #[prost(bytes="vec", tag="3")]
+    pub vault_id: ::prost::alloc::vec::Vec<u8>,
+    /// The vault balance.
+    #[prost(bytes="vec", tag="4")]
+    pub balance: ::prost::alloc::vec::Vec<u8>,
+}
 /// Defines a fully deployed order ready to evaluate by Orderbook. Identical to
 /// `Order` except for the newer `EvaluableV2`.
 #[allow(clippy::derive_partial_eq_without_eq)]
