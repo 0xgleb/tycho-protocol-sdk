@@ -15,21 +15,21 @@ pub fn map_order_added(
     params: String,
     block: eth::Block,
 ) -> Result<BlockEntityChanges, substreams::errors::Error> {
-    let mut new_pools: Vec<TransactionEntityChanges> = vec![];
+    let mut new_orders: Vec<TransactionEntityChanges> = vec![];
     let orderbook_address = params.as_str();
 
-    get_new_orders(&block, &mut new_pools, orderbook_address);
+    get_new_orders(&block, &mut new_orders, orderbook_address);
 
-    Ok(BlockEntityChanges { block: None, changes: new_pools })
+    Ok(BlockEntityChanges { block: None, changes: new_orders })
 }
 
-// Extract new pools from PoolCreated events
+// Extract new orders from AddOrderV2 events
 fn get_new_orders(
     block: &eth::Block,
-    new_pools: &mut Vec<TransactionEntityChanges>,
+    new_orders: &mut Vec<TransactionEntityChanges>,
     factory_address: &str,
 ) {
-    // Extract new pools from PoolCreated events
+    // Extract new orders from AddOrderV2 events
     let mut on_order_added = |event: AddOrderV2, _tx: &eth::TransactionTrace, _log: &eth::Log| {
         let tycho_tx: Transaction = _tx.into();
 
@@ -65,7 +65,7 @@ fn get_new_orders(
             })
             .collect::<Vec<_>>();
 
-        new_pools.push(TransactionEntityChanges {
+        new_orders.push(TransactionEntityChanges {
             tx: Some(tycho_tx.clone()),
             entity_changes: vec![EntityChanges {
                 component_id: event

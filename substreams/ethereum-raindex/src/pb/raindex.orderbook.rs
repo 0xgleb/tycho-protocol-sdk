@@ -22,12 +22,6 @@ pub struct OrderV3 {
     /// tokens will be sent from the owners vault.
     #[prost(message, repeated, tag="4")]
     pub valid_outputs: ::prost::alloc::vec::Vec<Io>,
-    /// A unique value for the order that the owner can use to prevent the order
-    /// hash being predictable or collide with existing orders. This MAY be
-    /// useful to prevent `addOrder` noops for orders with identical logic,
-    /// or to hide information on confidential chains.
-    #[prost(bytes="vec", tag="5")]
-    pub nonce: ::prost::alloc::vec::Vec<u8>,
 }
 /// Struct over the return of `IParserV2.parse2` which MAY be more convenient to
 /// work with than raw addresses.
@@ -40,9 +34,6 @@ pub struct EvaluableV3 {
     /// Address of the store that will store state changes due to evaluation of the expression.
     #[prost(bytes="vec", tag="2")]
     pub store: ::prost::alloc::vec::Vec<u8>,
-    /// Bytecode of the expression to be evaluated.
-    #[prost(bytes="vec", tag="3")]
-    pub bytecode: ::prost::alloc::vec::Vec<u8>,
 }
 /// Configuration for a single input or output on an `Order`.
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -54,16 +45,16 @@ pub struct Io {
     /// step.
     #[prost(bytes="vec", tag="1")]
     pub token: ::prost::alloc::vec::Vec<u8>,
-    /// The decimals to use for internal scaling calculations for `token`. This is
-    /// provided directly in IO to save gas on external lookups and to respect the
-    /// ERC20 spec that mandates NOT assuming or using the `decimals` method for
-    /// onchain calculations. Ostensibly the decimals exists so that all
-    /// calculate order entrypoints can treat amounts and ratios as 18 decimal
-    /// fixed point values. Order max amounts MUST be rounded down and IO ratios
-    /// rounded up to compensate for any loss of precision during decimal
-    /// rescaling.
-    #[prost(uint32, tag="2")]
-    pub decimals: u32,
+    // // The decimals to use for internal scaling calculations for `token`. This is
+    // // provided directly in IO to save gas on external lookups and to respect the
+    // // ERC20 spec that mandates NOT assuming or using the `decimals` method for
+    // // onchain calculations. Ostensibly the decimals exists so that all
+    // // calculate order entrypoints can treat amounts and ratios as 18 decimal
+    // // fixed point values. Order max amounts MUST be rounded down and IO ratios
+    // // rounded up to compensate for any loss of precision during decimal
+    // // rescaling.
+    // uint32 decimals = 2;
+
     /// The vault ID that tokens will move into if this is an input or move out
     /// from if this is an output.
     /// NOTE: Make it a big endian encoded int to be consistent with Tycho.
@@ -81,8 +72,10 @@ pub mod events {
     #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct OrderbookEvent {
-        #[prost(oneof="orderbook_event::Type", tags="1, 2")]
-        pub r#type: ::core::option::Option<orderbook_event::Type>,
+        #[prost(uint64, tag="100")]
+        pub log_ordinal: u64,
+        #[prost(oneof="orderbook_event::Event", tags="1, 2, 3")]
+        pub event: ::core::option::Option<orderbook_event::Event>,
     }
     /// Nested message and enum types in `OrderbookEvent`.
     pub mod orderbook_event {
@@ -112,15 +105,15 @@ pub mod events {
             /// `msg.sender` withdrawing tokens. Delegated withdrawals are NOT supported.
             #[prost(bytes="vec", tag="1")]
             pub sender: ::prost::alloc::vec::Vec<u8>,
-            /// / The token being withdrawn.
+            /// The token being withdrawn.
             #[prost(bytes="vec", tag="2")]
             pub token: ::prost::alloc::vec::Vec<u8>,
-            /// / The vault ID the tokens are being withdrawn from.
+            /// The vault ID the tokens are being withdrawn from.
             #[prost(bytes="vec", tag="3")]
             pub vault_id: ::prost::alloc::vec::Vec<u8>,
-            /// / The amount of tokens requested to withdraw.
-            #[prost(bytes="vec", tag="4")]
-            pub target_amount: ::prost::alloc::vec::Vec<u8>,
+            // // The amount of tokens requested to withdraw.
+            // bytes target_amount = 4;
+
             /// The amount of tokens withdrawn, can be less than the
             /// target amount if the vault does not have the funds available to cover
             /// the target amount. For example an active order might move tokens before
@@ -149,10 +142,11 @@ pub mod events {
         }
         #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Oneof)]
-        pub enum Type {
+        pub enum Event {
             #[prost(message, tag="1")]
             Deposit(Deposit),
-            /// AddOrderV2
+            #[prost(message, tag="2")]
+            Withdraw(Withdraw),
             /// RemoveOrderV2
             /// TakeOrderV2
             /// OrderNotFound
@@ -160,8 +154,8 @@ pub mod events {
             /// OrderExceedsMaxRatio
             /// ClearV2
             /// AfterClear
-            #[prost(message, tag="2")]
-            Withdraw(Withdraw),
+            #[prost(message, tag="3")]
+            AddOrder(AddOrderV2),
         }
     }
 }

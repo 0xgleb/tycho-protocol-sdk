@@ -7,23 +7,27 @@ package raindex.orderbook;
 message OrderV3 {
     // The owner of the order is the `msg.sender` that added the order.
     bytes owner = 1;
+
     // Standard `EvaluableV2` with entrypoints for both "calculate order" and
     // "handle IO". The latter MAY be empty bytes, in which case it will be 
     // skipped at runtime to save gas.
     EvaluableV3 evaluable = 2;
+
     // A list of input tokens that are economically equivalent for the purpose
     // of processing this order. Inputs are relative to the order so these
     // tokens will be sent to the owners vault.
     repeated IO valid_inputs = 3;
+
     // A list of output tokens that are economically equivalent for the purpose
     // of processing this order. Outputs are relative to the order so these
     // tokens will be sent from the owners vault.
     repeated IO valid_outputs = 4;
-    // A unique value for the order that the owner can use to prevent the order
-    // hash being predictable or collide with existing orders. This MAY be
-    // useful to prevent `addOrder` noops for orders with identical logic,
-    // or to hide information on confidential chains.
-    bytes nonce = 5;
+
+    // // A unique value for the order that the owner can use to prevent the order
+    // // hash being predictable or collide with existing orders. This MAY be
+    // // useful to prevent `addOrder` noops for orders with identical logic,
+    // // or to hide information on confidential chains.
+    // bytes nonce = 5;
 }
 
 // Struct over the return of `IParserV2.parse2` which MAY be more convenient to
@@ -31,10 +35,12 @@ message OrderV3 {
 message EvaluableV3 {
     // Address of the interpreter that will evaluate the expression.
     bytes interpreter = 1;
+
     // Address of the store that will store state changes due to evaluation of the expression.
     bytes store = 2;
-    // Bytecode of the expression to be evaluated.
-    bytes bytecode = 3;
+
+    // // Bytecode of the expression to be evaluated.
+    // bytes bytecode = 3;
 }
 
 // Configuration for a single input or output on an `Order`.
@@ -44,15 +50,17 @@ message IO {
     // order, only internal vault balances are updated, until a separate withdraw
     // step.
     bytes token = 1;
-    // The decimals to use for internal scaling calculations for `token`. This is
-    // provided directly in IO to save gas on external lookups and to respect the
-    // ERC20 spec that mandates NOT assuming or using the `decimals` method for
-    // onchain calculations. Ostensibly the decimals exists so that all
-    // calculate order entrypoints can treat amounts and ratios as 18 decimal
-    // fixed point values. Order max amounts MUST be rounded down and IO ratios
-    // rounded up to compensate for any loss of precision during decimal
-    // rescaling.
-    uint32 decimals = 2;
+
+    // // The decimals to use for internal scaling calculations for `token`. This is
+    // // provided directly in IO to save gas on external lookups and to respect the
+    // // ERC20 spec that mandates NOT assuming or using the `decimals` method for
+    // // onchain calculations. Ostensibly the decimals exists so that all
+    // // calculate order entrypoints can treat amounts and ratios as 18 decimal
+    // // fixed point values. Order max amounts MUST be rounded down and IO ratios
+    // // rounded up to compensate for any loss of precision during decimal
+    // // rescaling.
+    // uint32 decimals = 2;
+
     // The vault ID that tokens will move into if this is an input or move out
     // from if this is an output.
     // NOTE: Make it a big endian encoded int to be consistent with Tycho.
@@ -65,10 +73,10 @@ message Events {
     repeated OrderbookEvent orderbook_events = 1;
 
     message OrderbookEvent {
-        oneof type {
+        oneof event {
             Deposit deposit = 1;
             Withdraw withdraw = 2;
-            // AddOrderV2
+            AddOrderV2 add_order = 3;
             // RemoveOrderV2
             // TakeOrderV2
             // OrderNotFound
@@ -77,6 +85,8 @@ message Events {
             // ClearV2
             // AfterClear
         }
+
+        uint64 log_ordinal = 100;
 
         // Some tokens have been deposited to a vault.
         message Deposit {
@@ -96,12 +106,16 @@ message Events {
         message Withdraw {
             // `msg.sender` withdrawing tokens. Delegated withdrawals are NOT supported.
             bytes sender = 1;
-            /// The token being withdrawn.
+
+            // The token being withdrawn.
             bytes token = 2;
-            /// The vault ID the tokens are being withdrawn from.
+
+            // The vault ID the tokens are being withdrawn from.
             bytes vault_id = 3;
-            /// The amount of tokens requested to withdraw.
-            bytes target_amount = 4;
+
+            // // The amount of tokens requested to withdraw.
+            // bytes target_amount = 4;
+
             // The amount of tokens withdrawn, can be less than the
             // target amount if the vault does not have the funds available to cover
             // the target amount. For example an active order might move tokens before
