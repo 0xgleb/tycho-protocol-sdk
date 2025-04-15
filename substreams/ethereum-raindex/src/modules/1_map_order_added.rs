@@ -11,26 +11,26 @@ use crate::abi::raindex_orderbook::events::AddOrderV2;
 use tycho_substreams::prelude::*;
 
 #[substreams::handlers::map]
-pub fn map_order_created(
+pub fn map_order_added(
     params: String,
     block: eth::Block,
 ) -> Result<BlockEntityChanges, substreams::errors::Error> {
     let mut new_pools: Vec<TransactionEntityChanges> = vec![];
-    let factory_address = params.as_str();
+    let orderbook_address = params.as_str();
 
-    get_new_pools(&block, &mut new_pools, factory_address);
+    get_new_orders(&block, &mut new_pools, orderbook_address);
 
     Ok(BlockEntityChanges { block: None, changes: new_pools })
 }
 
 // Extract new pools from PoolCreated events
-fn get_new_pools(
+fn get_new_orders(
     block: &eth::Block,
     new_pools: &mut Vec<TransactionEntityChanges>,
     factory_address: &str,
 ) {
     // Extract new pools from PoolCreated events
-    let mut on_pool_created = |event: AddOrderV2, _tx: &eth::TransactionTrace, _log: &eth::Log| {
+    let mut on_order_added = |event: AddOrderV2, _tx: &eth::TransactionTrace, _log: &eth::Log| {
         let tycho_tx: Transaction = _tx.into();
 
         let (_owner, _evaluable, valid_inputs, valid_outputs, _nonce) = event.order.clone();
@@ -132,6 +132,6 @@ fn get_new_pools(
 
     eh.filter_by_address(vec![Address::from_str(factory_address).unwrap()]);
 
-    eh.on::<AddOrderV2, _>(&mut on_pool_created);
+    eh.on::<AddOrderV2, _>(&mut on_order_added);
     eh.handle_events();
 }
