@@ -15,6 +15,8 @@ pub fn map_order_added(
     params: String,
     block: eth::Block,
 ) -> Result<BlockEntityChanges, substreams::errors::Error> {
+    println!("Running map_order_added");
+
     let mut new_orders: Vec<TransactionEntityChanges> = vec![];
     let orderbook_address = params.as_str();
 
@@ -33,7 +35,7 @@ fn get_new_orders(
     let mut on_order_added = |event: AddOrderV2, _tx: &eth::TransactionTrace, _log: &eth::Log| {
         let tycho_tx: Transaction = _tx.into();
 
-        let (_owner, _evaluable, valid_inputs, valid_outputs, _nonce) = event.order.clone();
+        let (owner, _evaluable, valid_inputs, valid_outputs, _nonce) = event.order.clone();
 
         let input_tokens = valid_inputs
             .clone()
@@ -65,14 +67,16 @@ fn get_new_orders(
             })
             .collect::<Vec<_>>();
 
+        let component_id = format!(
+            "{owner}:{order}",
+            owner = owner.to_vec().to_hex(),
+            order = event.order_hash.to_vec().to_hex()
+        );
+
         new_orders.push(TransactionEntityChanges {
             tx: Some(tycho_tx.clone()),
             entity_changes: vec![EntityChanges {
-                component_id: event
-                    .order_hash
-                    .clone()
-                    .to_vec()
-                    .to_hex(),
+                component_id: component_id.clone(),
 
                 attributes: vec![
                     // Attribute {
@@ -94,7 +98,7 @@ fn get_new_orders(
             }],
 
             component_changes: vec![ProtocolComponent {
-                id: event.order_hash.to_vec().to_hex(),
+                id: component_id,
                 tokens,
                 contracts: vec![],
                 static_att: vec![

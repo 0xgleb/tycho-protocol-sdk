@@ -4146,6 +4146,7 @@ pub mod events {
         pub order: (
             // `address owner`
             Vec<u8>,
+
             // `EvaluableV3 evaluable`
             (
                 // - `IInterpreterV3 interpreter`
@@ -4155,6 +4156,7 @@ pub mod events {
                 // `bytes bytecode`
                 Vec<u8>,
             ),
+
             // `IO[] validInputs`
             Vec<(
                 // `address token`
@@ -4164,6 +4166,7 @@ pub mod events {
                 // `uint256 vaultId`
                 substreams::scalar::BigInt,
             )>,
+
             // `IO[] validOutputs`
             Vec<(
                 // `address token`
