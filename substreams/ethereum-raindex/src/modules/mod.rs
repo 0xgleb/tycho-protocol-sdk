@@ -5,8 +5,8 @@ pub use map_order_added::map_order_added;
 #[path = "1_map_events.rs"]
 mod map_events;
 
-// #[path = "2_map_and_store_vault_balances.rs"]
-// mod map_and_store_vault_balances;
+#[path = "2_store_vault_balances.rs"]
+mod store_vault_balances;
 
 // #[path = "3_store_orders.rs"]
 // mod store_orders;

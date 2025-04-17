@@ -1,11 +1,9 @@
 use std::str::FromStr;
 
 use ethabi::ethereum_types::Address;
-use substreams::scalar::BigInt;
 use substreams_ethereum::pb::eth::v2::{self as eth};
 
 use substreams_ethereum::Event;
-use substreams_helper::{event_handler::EventHandler, hex::Hexable};
 
 use crate::abi::raindex_orderbook::events as abi;
 use crate::pb::raindex::orderbook::{

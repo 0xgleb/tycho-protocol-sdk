@@ -19,6 +19,15 @@ binaries:
     file: ../target/wasm32-unknown-unknown/release/ethereum_raindex.wasm
 
 modules:
+  # - name: map_order_added
+  #   kind: map
+  #   initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+  #   inputs:
+  #     - params: string
+  #     - source: sf.ethereum.type.v2.Block
+  #   output:
+  #     type: proto:tycho.evm.v1.BlockEntityChanges
+
   - name: map_events
     kind: map
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
@@ -28,88 +37,13 @@ modules:
     output:
       type: proto:tycho.evm.v1.BlockEntityChanges
 
-  - name: map_order_added
-    kind: map
+  - name: store_vault_balances
+    kind: store
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    updatePolicy: add
+    valueType: bigint
     inputs:
-      - params: string
-      - source: sf.ethereum.type.v2.Block
-    output:
-      type: proto:tycho.evm.v1.BlockEntityChanges
-
-  # - name: store_pools
-  #   kind: store
-  #   initialBlock: 1371680
-  #   updatePolicy: set_if_not_exists
-  #   valueType: proto:uniswap.v3.Pool
-  #   inputs:
-  #     - map: map_pools_created
-
-  # - name: map_events
-  #   kind: map
-  #   initialBlock: 1371680
-  #   inputs:
-  #     - source: sf.ethereum.type.v2.Block
-  #     - store: store_pools
-  #   output:
-  #     type: proto:uniswap.v3.Events
-
-  # - name: map_balance_changes
-  #   kind: map
-  #   initialBlock: 1371680
-  #   inputs:
-  #     - map: map_events
-  #   output:
-  #     type: proto:tycho.evm.v1.BlockBalanceDeltas
-
-  # - name: store_pools_balances
-  #   kind: store
-  #   initialBlock: 1371680
-  #   updatePolicy: add
-  #   valueType: bigint
-  #   inputs:
-  #     - map: map_balance_changes
-
-  # - name: map_ticks_changes
-  #   kind: map
-  #   initialBlock: 1371680
-  #   inputs:
-  #     - map: map_events
-  #   output:
-  #     type: proto:uniswap.v3.TickDeltas
-
-  # - name: store_ticks_liquidity
-  #   kind: store
-  #   initialBlock: 1371680
-  #   updatePolicy: add
-  #   valueType: bigint
-  #   inputs:
-  #     - map: map_ticks_changes
-
-  # - name: store_pool_current_tick
-  #   kind: store
-  #   initialBlock: 1371680
-  #   updatePolicy: set
-  #   valueType: int64
-  #   inputs:
-  #     - map: map_events
-
-  # - name: map_liquidity_changes
-  #   kind: map
-  #   initialBlock: 1371680
-  #   inputs:
-  #     - map: map_events
-  #     - store: store_pool_current_tick
-  #   output:
-  #     type: proto:uniswap.v3.LiquidityChanges
-
-  # - name: store_liquidity
-  #   kind: store
-  #   initialBlock: 1371680
-  #   updatePolicy: set_sum
-  #   valueType: bigint
-  #   inputs:
-  #     - map: map_liquidity_changes
+      - map: map_events
 
   # - name: map_protocol_changes
   #   kind: map
@@ -132,4 +66,4 @@ modules:
 
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
-  map_order_added: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
+  # map_order_added: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
