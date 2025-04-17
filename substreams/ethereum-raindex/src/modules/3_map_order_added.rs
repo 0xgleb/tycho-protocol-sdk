@@ -27,7 +27,9 @@ pub fn map_order_added(
 
     get_new_orders(&block, &mut new_orders, &events, store)?;
 
-    Ok(BlockEntityChanges { block: Some((&block).into()), changes: new_orders })
+    let block = if new_orders.is_empty() { None } else { Some((&block).into()) };
+
+    Ok(BlockEntityChanges { block, changes: new_orders })
 }
 
 // Extract new orders from AddOrderV2 events

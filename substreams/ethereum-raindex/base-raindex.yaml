@@ -5,9 +5,10 @@ package:
 
 protobuf:
   files:
-    - tycho/evm/v1/vm.proto
+    - tycho/evm/v1/entity.proto
     - tycho/evm/v1/common.proto
     - tycho/evm/v1/utils.proto
+    - tycho/evm/v1/vm.proto
     - orderbook.proto
   importPaths:
     - ../../proto
@@ -48,7 +49,8 @@ modules:
       - store: store_vault_balances
         mode: get
     output:
-      type: proto:tycho.evm.v1.BlockChanges
+      type: proto:tycho.evm.v1.BlockEntityChanges
+      # type: proto:tycho.evm.v1.BlockChanges
 
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
