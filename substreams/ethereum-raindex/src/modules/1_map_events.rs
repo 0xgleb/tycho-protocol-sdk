@@ -11,13 +11,13 @@ use crate::pb::raindex::orderbook::{
     Io, OrderV3,
 };
 
-// use tycho_substreams::prelude::*;
-
 #[substreams::handlers::map]
 pub fn map_events(
     params: String,
     block: eth::Block,
 ) -> Result<RaindexEvents, substreams::errors::Error> {
+    substreams::log::debug!("map_events called with params: {params}");
+
     let orderbook_address = Address::from_str(params.as_str())?;
 
     let mut orderbook_events: Vec<OrderbookEvent> = block
@@ -95,36 +95,7 @@ pub fn map_events(
         })
         .collect::<Vec<_>>();
 
-    // get_events(&block, &mut orderbook_events, orderbook_address);
-
     orderbook_events.sort_unstable_by_key(|e| e.log_ordinal);
 
     Ok(RaindexEvents { orderbook_events })
 }
-
-// fn get_events(
-//     block: &eth::Block,
-//     orderbook_events: &mut Vec<OrderbookEvent>,
-//     factory_address: &str,
-// ) {
-//     let mut event_handler = EventHandler::new(block);
-//     event_handler.filter_by_address(vec![Address::from_str(factory_address).unwrap()]);
-
-//     // Extract Deposit events from block logs
-//     let mut on_deposit = |event: , _tx: &eth::TransactionTrace, log: &eth::Log| {
-//     };
-
-//     // Extract Withdraw events from block logs
-//     let mut on_withdraw = |event: abi::Withdraw, _tx: &eth::TransactionTrace, log: &eth::Log| {
-//     };
-
-//     // Extract AddOrderV2 events from block logs
-//     let mut on_order_added =
-//         |event: abi::AddOrderV2, _tx: &eth::TransactionTrace, log: &eth::Log| {
-//         };
-
-//     event_handler.on::<abi::Deposit, _>(&mut on_deposit);
-//     event_handler.on::<abi::Withdraw, _>(&mut on_withdraw);
-//     event_handler.on::<abi::AddOrderV2, _>(&mut on_order_added);
-//     event_handler.handle_events();
-// }

@@ -19,18 +19,10 @@ binaries:
     file: ../target/wasm32-unknown-unknown/release/ethereum_raindex.wasm
 
 modules:
-  # - name: map_order_added
-  #   kind: map
-  #   initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
-  #   inputs:
-  #     - params: string
-  #     - source: sf.ethereum.type.v2.Block
-  #   output:
-  #     type: proto:tycho.evm.v1.BlockEntityChanges
-
   - name: map_events
     kind: map
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    # initialBlock: 19033330
     inputs:
       - params: string
       - source: sf.ethereum.type.v2.Block
@@ -40,6 +32,7 @@ modules:
   - name: store_vault_balances
     kind: store
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    # initialBlock: 19033330
     updatePolicy: add
     valueType: bigint
     inputs:
@@ -48,9 +41,11 @@ modules:
   - name: map_order_added
     kind: map
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    # initialBlock: 19033330
     inputs:
+      - params: string
       - source: sf.ethereum.type.v2.Block
-      # - map: map_events
+      - map: map_events
       - store: store_vault_balances
         mode: get
     output:
@@ -58,4 +53,4 @@ modules:
 
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
-  # map_order_added: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
+  map_order_added: "d2938E7c9fe3597F78832CE780Feb61945c377d7"

@@ -2,11 +2,14 @@ use std::str::FromStr;
 
 use ethabi::ethereum_types::Address;
 use substreams::scalar::BigInt;
+use substreams::store::{StoreGet, StoreGetBigInt};
 use substreams_ethereum::pb::eth::v2::{self as eth};
 
 use substreams_helper::{event_handler::EventHandler, hex::Hexable};
 
 use crate::abi::raindex_orderbook::events::AddOrderV2;
+use crate::get_vault_balance_key;
+use crate::pb::raindex::orderbook::Events as RaindexEvents;
 
 use tycho_substreams::prelude::*;
 
@@ -14,15 +17,17 @@ use tycho_substreams::prelude::*;
 pub fn map_order_added(
     params: String,
     block: eth::Block,
+    _events: RaindexEvents,
+    store: StoreGetBigInt,
 ) -> Result<BlockEntityChanges, substreams::errors::Error> {
-    println!("Running map_order_added");
+    substreams::log::debug!("map_order_added called with params: {params}");
 
     let mut new_orders: Vec<TransactionEntityChanges> = vec![];
     let orderbook_address = params.as_str();
 
-    get_new_orders(&block, &mut new_orders, orderbook_address);
+    get_new_orders(&block, &mut new_orders, orderbook_address, store);
 
-    Ok(BlockEntityChanges { block: None, changes: new_orders })
+    Ok(BlockEntityChanges { block: Some((&block).into()), changes: new_orders })
 }
 
 // Extract new orders from AddOrderV2 events
@@ -30,6 +35,7 @@ fn get_new_orders(
     block: &eth::Block,
     new_orders: &mut Vec<TransactionEntityChanges>,
     factory_address: &str,
+    store: StoreGetBigInt,
 ) {
     // Extract new orders from AddOrderV2 events
     let mut on_order_added = |event: AddOrderV2, _tx: &eth::TransactionTrace, _log: &eth::Log| {
@@ -59,11 +65,16 @@ fn get_new_orders(
         let balance_changes = valid_inputs
             .into_iter()
             .chain(valid_outputs)
-            .map(|(token, _decimals, _vault_id)| BalanceChange {
-                token,
-                // NOTE: This might be wrong as the vault can already exist and have a balance
-                balance: BigInt::from(0).to_signed_bytes_be(),
-                component_id: event.order_hash.clone().to_vec(),
+            .map(|(token, _decimals, vault_id)| {
+                let balance = store
+                    .get_last(get_vault_balance_key(&owner, &token, &vault_id.to_signed_bytes_be()))
+                    .unwrap_or(BigInt::from(0));
+
+                BalanceChange {
+                    token,
+                    balance: balance.to_signed_bytes_be(),
+                    component_id: event.order_hash.clone().to_vec(),
+                }
             })
             .collect::<Vec<_>>();
 
