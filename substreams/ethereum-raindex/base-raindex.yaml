@@ -35,7 +35,7 @@ modules:
       - params: string
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:tycho.evm.v1.BlockEntityChanges
+      type: proto:raindex.orderbook.Events
 
   - name: store_vault_balances
     kind: store
@@ -45,24 +45,16 @@ modules:
     inputs:
       - map: map_events
 
-  # - name: map_protocol_changes
-  #   kind: map
-  #   initialBlock: 1371680
-  #   inputs:
-  #     - source: sf.ethereum.type.v2.Block
-  #     - map: map_pools_created
-  #     - map: map_events
-  #     - map: map_balance_changes
-  #     - store: store_pools_balances
-  #       mode: deltas
-  #     - map: map_ticks_changes
-  #     - store: store_ticks_liquidity
-  #       mode: deltas
-  #     - map: map_liquidity_changes
-  #     - store: store_liquidity
-  #       mode: deltas
-  #   output:
-  #     type: proto:tycho.evm.v1.BlockChanges
+  - name: map_order_added
+    kind: map
+    initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      # - map: map_events
+      - store: store_vault_balances
+        mode: get
+    output:
+      type: proto:tycho.evm.v1.BlockChanges
 
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"

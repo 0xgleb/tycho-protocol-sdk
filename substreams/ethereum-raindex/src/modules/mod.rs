@@ -11,7 +11,7 @@ mod store_vault_balances;
 // #[path = "3_store_orders.rs"]
 // mod store_orders;
 
-#[path = "1_map_order_added.rs"]
+#[path = "3_map_order_added.rs"]
 mod map_order_added;
 
 // #[path = "4_map_and_store_balance_changes.rs"]
