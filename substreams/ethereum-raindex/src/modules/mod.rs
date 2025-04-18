@@ -14,5 +14,5 @@ mod store_vault_orders;
 #[path = "4_map_order_added.rs"]
 mod map_order_added;
 
-// #[path = "5_map_order_deposit.rs"]
-// mod map_order_deposit;
+#[path = "5_map_order_deposit.rs"]
+mod map_order_deposit;
