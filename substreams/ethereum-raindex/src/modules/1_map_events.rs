@@ -22,7 +22,9 @@ pub fn map_events(
 
     let mut orderbook_events: Vec<OrderbookEvent> = block
         .logs()
-        .filter(|log| log.address().to_vec() == orderbook_address.0)
+        .filter(|log| {
+            log.address().to_vec() == orderbook_address.0 && log.receipt.transaction.status == 1
+        })
         .filter_map(|log| {
             if let Some(event) = abi::Deposit::match_and_decode(log) {
                 let abi::Deposit { sender, token, vault_id, amount } = event;
@@ -33,6 +35,8 @@ pub fn map_events(
                     vault_id: vault_id.to_bytes_be().1,
                     amount: amount.to_bytes_be().1,
                 };
+
+                substreams::log::debug!("Mapping deposit event: {deposit_event:?}");
 
                 Some(OrderbookEvent {
                     log_ordinal: log.ordinal(),

@@ -22,6 +22,7 @@ pub fn store_vault_balances(raindex_events: RaindexEvents, store: StoreAddBigInt
                 event: Some(event::Event::Deposit(deposit_event)),
             } = event
             {
+                substreams::log::debug!("Storing deposit event: {deposit_event:?}");
                 let Deposit { sender: owner, token, vault_id, amount } = deposit_event;
 
                 let amount = BigInt::from_unsigned_bytes_be(amount);
