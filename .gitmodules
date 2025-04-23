@@ -4,3 +4,6 @@
 [submodule "lib/openzeppelin-contracts"]
 	path = evm/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "evm/lib/rain.orderbook.interface"]
+	path = evm/lib/rain.orderbook.interface
+	url = https://github.com/rainlanguage/rain.orderbook.interface
