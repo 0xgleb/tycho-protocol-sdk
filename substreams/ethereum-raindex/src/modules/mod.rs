@@ -1,8 +1,8 @@
 #[path = "1_map_events.rs"]
 mod map_events;
 
-#[path = "2_store_evaluable_store_order.rs"]
-mod store_evaluable_store_order;
+#[path = "2_store_evaluable_store_orders.rs"]
+mod store_evaluable_store_orders;
 
 #[path = "3_store_vault_orders.rs"]
 mod store_vault_orders;

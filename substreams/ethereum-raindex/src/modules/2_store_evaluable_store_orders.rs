@@ -6,7 +6,7 @@ use crate::pb::raindex::orderbook::OrderV3;
 use crate::pb::raindex::orderbook::{events::OrderbookEvent, Events as RaindexEvents};
 
 #[substreams::handlers::store]
-pub fn store_order_evaluable_store(raindex_events: RaindexEvents, store: StoreSetString) {
+pub fn store_evaluable_store_orders(raindex_events: RaindexEvents, store: StoreSetString) {
     raindex_events
         .orderbook_events
         .iter()

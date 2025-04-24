@@ -30,12 +30,12 @@ modules:
     output:
       type: proto:raindex.orderbook.Events
 
-  - name: store_vault_balances
+  - name: store_evaluable_store_orders
     kind: store
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
     # initialBlock: 19033330
-    updatePolicy: add
-    valueType: bigint
+    updatePolicy: set
+    valueType: string
     inputs:
       - map: map_events
 
@@ -59,18 +59,28 @@ modules:
     output:
       type: proto:tycho.evm.v1.BlockBalanceDeltas
 
-  # - name: map_protocol_changes
-  #   kind: map
-  #   initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
-  #   # initialBlock: 19033330
-  #   inputs:
-  #     - source: sf.ethereum.type.v2.Block
-  #     - map: map_events
-  #     - store: store_vault_balances
-  #       mode: get
-  #   output:
-  #     # type: proto:tycho.evm.v1.BlockEntityChanges
-  #     type: proto:tycho.evm.v1.BlockChanges
+  - name: store_balances
+    kind: store
+    initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    # initialBlock: 19033330
+    updatePolicy: add
+    valueType: bigint
+    inputs:
+      - map: map_relative_balances
+
+  - name: map_protocol_changes
+    kind: map
+    initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+    # initialBlock: 19033330
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - map: map_events
+      - map: map_relative_balances
+      - store: store_balances
+        mode: deltas # This is the key property that simplifies `BalanceChange` handling
+      - store: store_evaluable_store_orders
+    output:
+      type: proto:tycho.evm.v1.BlockChanges
 
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"

@@ -30,19 +30,12 @@ pub fn map_relative_balances(
                 let vault_key = get_vault_balance_key(&owner, &token, &vault_id.to_bytes_be().1);
 
                 if let Some(order_hash) = order_vaults_store.get_last(&vault_key) {
-                    let order_hash = hex::decode(
-                        order_hash
-                            .strip_prefix("0x")
-                            .unwrap_or(&order_hash),
-                    )
-                    .unwrap(); // TODO: remove unwrap
-
                     deltas.push(BalanceDelta {
                         ord: log.ordinal(),
                         tx: Some(log.receipt.transaction.into()),
                         token: token.to_vec(),
                         delta: amount.to_signed_bytes_be(),
-                        component_id: order_hash,
+                        component_id: order_hash.as_bytes().to_vec(), // NOTE: it's expected to be a UTF-8 string
                     });
                 }
             } else if let Some(event) = abi::Withdraw::match_and_decode(log) {
@@ -51,14 +44,12 @@ pub fn map_relative_balances(
                 let vault_key = get_vault_balance_key(&sender, &token, &vault_id.to_bytes_be().1);
 
                 if let Some(order_hash) = order_vaults_store.get_last(&vault_key) {
-                    let order_hash = hex::decode(order_hash).unwrap(); // TODO: remove unwrap
-
                     deltas.push(BalanceDelta {
                         ord: log.ordinal(),
                         tx: Some(log.receipt.transaction.into()),
                         token: token.to_vec(),
                         delta: amount.neg().to_signed_bytes_be(),
-                        component_id: order_hash,
+                        component_id: order_hash.as_bytes().to_vec(), // NOTE: it's expected to be a UTF-8 string
                     });
                 }
             }
