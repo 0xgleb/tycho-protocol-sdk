@@ -16,8 +16,6 @@ pub fn map_events(
     params: String,
     block: eth::Block,
 ) -> Result<RaindexEvents, substreams::errors::Error> {
-    substreams::log::debug!("map_events called with params: {params}");
-
     let orderbook_address = Address::from_str(params.as_str())?;
 
     let mut orderbook_events: Vec<OrderbookEvent> = block

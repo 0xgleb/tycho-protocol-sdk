@@ -8,11 +8,6 @@ use crate::pb::raindex::orderbook::{Io, OrderV3};
 
 #[substreams::handlers::store]
 pub fn store_vault_orders(raindex_events: RaindexEvents, store: StoreSetString) {
-    substreams::log::debug!(
-        "store_vaults_balances called with {} raindex_events",
-        raindex_events.orderbook_events.len()
-    );
-
     raindex_events
         .orderbook_events
         .iter()
@@ -31,12 +26,6 @@ pub fn store_vault_orders(raindex_events: RaindexEvents, store: StoreSetString) 
                     .map(|Io { token, vault_id }| get_vault_balance_key(&owner, token, vault_id));
 
                 for vault in vaults {
-                    substreams::log::debug!(
-                        "Storing order {:?} vault: {}",
-                        order_hash.to_hex(),
-                        vault
-                    );
-
                     // TODO: Handle cases where the same vault is used for multiple orders
                     store.set(0, &vault, &order_hash.to_hex());
                 }

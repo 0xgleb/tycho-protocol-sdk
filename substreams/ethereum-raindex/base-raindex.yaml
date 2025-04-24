@@ -48,32 +48,30 @@ modules:
     inputs:
       - map: map_events
 
-  - name: map_order_added
+  - name: map_relative_balances
     kind: map
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
     # initialBlock: 19033330
     inputs:
+      - params: string
       - source: sf.ethereum.type.v2.Block
-      - map: map_events
-      - store: store_vault_balances
-        mode: get
-    output:
-      # type: proto:tycho.evm.v1.BlockEntityChanges
-      type: proto:tycho.evm.v1.BlockChanges
-
-  - name: map_order_deposit
-    kind: map
-    initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
-    # initialBlock: 19033330
-    inputs:
-      - source: sf.ethereum.type.v2.Block
-      - map: map_events
-      - store: store_vault_balances
-        mode: get
       - store: store_vault_orders
-        mode: get
     output:
-      type: proto:tycho.evm.v1.BlockEntityChanges
+      type: proto:tycho.evm.v1.BlockBalanceDeltas
+
+  # - name: map_protocol_changes
+  #   kind: map
+  #   initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
+  #   # initialBlock: 19033330
+  #   inputs:
+  #     - source: sf.ethereum.type.v2.Block
+  #     - map: map_events
+  #     - store: store_vault_balances
+  #       mode: get
+  #   output:
+  #     # type: proto:tycho.evm.v1.BlockEntityChanges
+  #     type: proto:tycho.evm.v1.BlockChanges
 
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
+  map_relative_balances: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
