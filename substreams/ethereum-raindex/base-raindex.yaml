@@ -73,6 +73,7 @@ modules:
     initialBlock: 20761100 # NOTE: Actual base deployment block: 19033330
     # initialBlock: 19033330
     inputs:
+      - params: string
       - source: sf.ethereum.type.v2.Block
       - map: map_events
       - map: map_relative_balances
@@ -85,3 +86,4 @@ modules:
 params:
   map_events: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
   map_relative_balances: "d2938E7c9fe3597F78832CE780Feb61945c377d7"
+  map_protocol_changes: "d2938E7c9fe3597F78832CE780Feb61945c377d7"

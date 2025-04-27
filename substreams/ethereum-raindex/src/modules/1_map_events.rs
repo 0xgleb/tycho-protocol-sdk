@@ -34,8 +34,6 @@ pub fn map_events(
                     amount: amount.to_bytes_be().1,
                 };
 
-                substreams::log::debug!("Mapping deposit event: {deposit_event:?}");
-
                 Some(OrderbookEvent {
                     log_ordinal: log.ordinal(),
                     event: Some(event::Event::Deposit(deposit_event)),

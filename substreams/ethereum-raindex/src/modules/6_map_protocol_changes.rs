@@ -1,6 +1,7 @@
+use ethabi::ethereum_types::Address;
 use itertools::Itertools;
 use std::collections::HashMap;
-
+use std::str::FromStr;
 use substreams::pb::substreams::StoreDeltas;
 use substreams::store::{StoreGet, StoreGetString};
 use substreams_ethereum::pb::eth::v2::{self as eth};
@@ -15,6 +16,7 @@ use crate::pb::raindex::orderbook::{
 
 #[substreams::handlers::map]
 pub fn map_protocol_changes(
+    params: String,
     block: eth::Block,
     events: RaindexEvents,
     balance_deltas: BlockBalanceDeltas,
@@ -22,11 +24,7 @@ pub fn map_protocol_changes(
     balance_store: StoreDeltas, // Note, this map module is using the `deltas` mode for the store.
     evaluable_store: StoreGetString,
 ) -> Result<BlockChanges, substreams::errors::Error> {
-    substreams::log::debug!(
-        "map_order_added called on block {} with {} events",
-        block.number,
-        events.orderbook_events.len()
-    );
+    let orderbook_address = Address::from_str(params.as_str())?;
 
     let mut transaction_changes: HashMap<u64, TransactionChangesBuilder> = HashMap::new();
 
@@ -54,6 +52,7 @@ pub fn map_protocol_changes(
             evaluable_store
                 .get_last(hex::encode(addr))
                 .is_some()
+                || addr == orderbook_address.0
         },
         &mut transaction_changes,
     );
